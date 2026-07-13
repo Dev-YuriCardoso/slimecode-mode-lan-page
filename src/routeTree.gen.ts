@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SlimecodeModoLanRouteImport } from './routes/slimecodeModoLan'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SlimecodeModoLanRoute = SlimecodeModoLanRouteImport.update({
+  id: '/slimecodeModoLan',
+  path: '/slimecodeModoLan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +25,39 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/slimecodeModoLan': typeof SlimecodeModoLanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/slimecodeModoLan': typeof SlimecodeModoLanRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/slimecodeModoLan': typeof SlimecodeModoLanRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/slimecodeModoLan'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/slimecodeModoLan'
+  id: '__root__' | '/' | '/slimecodeModoLan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SlimecodeModoLanRoute: typeof SlimecodeModoLanRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/slimecodeModoLan': {
+      id: '/slimecodeModoLan'
+      path: '/slimecodeModoLan'
+      fullPath: '/slimecodeModoLan'
+      preLoaderRoute: typeof SlimecodeModoLanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +70,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SlimecodeModoLanRoute: SlimecodeModoLanRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
